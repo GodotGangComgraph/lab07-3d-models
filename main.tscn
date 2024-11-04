@@ -50,7 +50,6 @@ theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
 [node name="Menu" type="VBoxContainer" parent="HBox/MarginContainer"]
-visible = false
 custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -220,6 +219,7 @@ layout_mode = 2
 text = "YZ"
 
 [node name="Menu2" type="VBoxContainer" parent="HBox/MarginContainer"]
+visible = false
 layout_mode = 2
 
 [node name="Clear" type="Button" parent="HBox/MarginContainer/Menu2"]
@@ -281,6 +281,70 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "CREATE"
 
+[node name="Menu3" type="VBoxContainer" parent="HBox/MarginContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Clear" type="Button" parent="HBox/MarginContainer/Menu3"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "CLEAR"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBox/MarginContainer/Menu3"]
+layout_mode = 2
+
+[node name="Point" type="HBoxContainer" parent="HBox/MarginContainer/Menu3/HBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBox/MarginContainer/Menu3/HBoxContainer/Point"]
+custom_minimum_size = Vector2(125, 0)
+layout_mode = 2
+text = "BORDER"
+horizontal_alignment = 1
+
+[node name="x0" parent="HBox/MarginContainer/Menu3/HBoxContainer/Point" instance=ExtResource("2_4ej14")]
+layout_mode = 2
+text = "-10"
+placeholder_text = "x0"
+
+[node name="x1" parent="HBox/MarginContainer/Menu3/HBoxContainer/Point" instance=ExtResource("2_4ej14")]
+layout_mode = 2
+text = "10"
+placeholder_text = "x1"
+
+[node name="y0" parent="HBox/MarginContainer/Menu3/HBoxContainer/Point" instance=ExtResource("2_4ej14")]
+layout_mode = 2
+text = "-10"
+placeholder_text = "y0"
+
+[node name="y1" parent="HBox/MarginContainer/Menu3/HBoxContainer/Point" instance=ExtResource("2_4ej14")]
+layout_mode = 2
+text = "10"
+placeholder_text = "y1"
+
+[node name="Label" type="Label" parent="HBox/MarginContainer/Menu3/HBoxContainer"]
+layout_mode = 2
+text = "STEP"
+
+[node name="Step" parent="HBox/MarginContainer/Menu3/HBoxContainer" instance=ExtResource("2_4ej14")]
+layout_mode = 2
+text = "0.5"
+
+[node name="FunctionButton" type="OptionButton" parent="HBox/MarginContainer/Menu3"]
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "cos(x+y)"
+popup/item_1/text = "cos(x*x+y *y)/(x*x+y*y+1)"
+popup/item_1/id = 1
+
+[node name="CreateF" type="Button" parent="HBox/MarginContainer/Menu3"]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "CREATE"
+
 [node name="MarginContainer2" type="MarginContainer" parent="HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -292,9 +356,15 @@ theme_override_constants/margin_bottom = 20
 [node name="VBoxContainer" type="VBoxContainer" parent="HBox/MarginContainer2"]
 layout_mode = 2
 
-[node name="Change" type="Button" parent="HBox/MarginContainer2/VBoxContainer"]
+[node name="Change" type="OptionButton" parent="HBox/MarginContainer2/VBoxContainer"]
 layout_mode = 2
-text = "CHANGE"
+selected = 0
+item_count = 3
+popup/item_0/text = "AFFINE"
+popup/item_1/text = "ROTATION"
+popup/item_1/id = 1
+popup/item_2/text = "FUNCTION"
+popup/item_2/id = 2
 
 [node name="OptionButton2" type="OptionButton" parent="HBox/MarginContainer2/VBoxContainer"]
 layout_mode = 2
@@ -323,6 +393,9 @@ text = "AUTO ROTATE"
 [connection signal="pressed" from="HBox/MarginContainer/Menu2/Clear" to="." method="_on_clear_pressed"]
 [connection signal="pressed" from="HBox/MarginContainer/Menu2/Point/AddPoint" to="." method="_on_add_point_pressed"]
 [connection signal="pressed" from="HBox/MarginContainer/Menu2/Create" to="." method="_on_create_pressed"]
-[connection signal="pressed" from="HBox/MarginContainer2/VBoxContainer/Change" to="." method="_on_change_pressed"]
+[connection signal="pressed" from="HBox/MarginContainer/Menu3/Clear" to="." method="_on_clear_pressed"]
+[connection signal="item_selected" from="HBox/MarginContainer/Menu3/FunctionButton" to="." method="_on_function_button_item_selected"]
+[connection signal="pressed" from="HBox/MarginContainer/Menu3/CreateF" to="." method="_on_create_f_pressed"]
+[connection signal="item_selected" from="HBox/MarginContainer2/VBoxContainer/Change" to="." method="_on_change_item_selected"]
 [connection signal="item_selected" from="HBox/MarginContainer2/VBoxContainer/OptionButton2" to="." method="_on_option_button_2_item_selected"]
 [connection signal="toggled" from="HBox/MarginContainer2/VBoxContainer/CheckBox" to="." method="_on_check_box_toggled"]

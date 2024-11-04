@@ -3,7 +3,7 @@ extends Control
 
 var edge_length = 100
 
-var spatial: F.RotationSpatial
+var spatial
 var axis = F.Axis.new()
 
 var axonometric_matrix = F.AffineMatrices.get_axonometric_matrix(35.26, 45)
@@ -46,7 +46,7 @@ var point_start: Array
 var world_center: Vector3 = Vector3(450, 300, 0)
 
 func _ready():
-	spatial = F.RotationSpatial.new()
+	spatial = F.Spatial.new()
 	#point_start = spatial.points_start
 	spatial.translate(world_center.x, world_center.y, world_center.z)
 	axis.translate(world_center.x, world_center.y, world_center.z)
@@ -223,15 +223,11 @@ func _on_option_button_2_item_selected(index: int) -> void:
 func _on_check_box_toggled(toggled_on: bool) -> void:
 	is_auto_rotating = toggled_on
 
-
-func _on_change_pressed() -> void:
-	$HBox/MarginContainer/Menu.visible = not $HBox/MarginContainer/Menu.visible
-	$HBox/MarginContainer/Menu2.visible = not $HBox/MarginContainer/Menu2.visible
-
 @onready var divisions: LineEdit = $HBox/MarginContainer/Menu2/HBoxContainer/Divisions
 @onready var option_button: OptionButton = $HBox/MarginContainer/Menu2/OptionButton
 
 func _on_create_pressed() -> void:
+	spatial = F.RotationSpatial.new()
 	spatial.clear()
 	spatial.num_segments = divisions.value
 	spatial.mid_point = F.Point.new(0,0,0)
@@ -256,3 +252,36 @@ func _on_create_pressed() -> void:
 
 func _on_add_point_pressed() -> void:
 	point_start.append(F.Point.new(x.value, y.value, z.value))
+
+
+@onready var menus = [
+	$HBox/MarginContainer/Menu,
+	$HBox/MarginContainer/Menu2,
+	$HBox/MarginContainer/Menu3
+]
+
+func _on_change_item_selected(index: int) -> void:
+	for i in range(3):
+		menus[i].visible = false
+	menus[index].visible = true
+	
+@onready var x_0: LineEdit = $HBox/MarginContainer/Menu3/HBoxContainer/Point/x0
+@onready var x_1: LineEdit = $HBox/MarginContainer/Menu3/HBoxContainer/Point/x1
+@onready var y_0: LineEdit = $HBox/MarginContainer/Menu3/HBoxContainer/Point/y0
+@onready var y_1: LineEdit = $HBox/MarginContainer/Menu3/HBoxContainer/Point/y1
+@onready var step: LineEdit = $HBox/MarginContainer/Menu3/HBoxContainer/Step
+
+var possible_funcs = [
+	func(x, y): return cos(x + y),
+	func(x, y): return cos(x*x+y*y)/(x*x+y*y+1)
+]
+var selected_func = possible_funcs[0]
+
+func _on_create_f_pressed() -> void:
+	spatial = F.FunctionSurface.new()
+	spatial.create(x_0.value, x_1.value, y_0.value, y_1.value, step.value, selected_func)
+	spatial.translate(world_center.x, world_center.y, world_center.z)
+	queue_redraw()
+	
+func _on_function_button_item_selected(index: int) -> void:
+	selected_func = possible_funcs[index]

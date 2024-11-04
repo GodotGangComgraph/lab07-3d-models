@@ -317,3 +317,27 @@ class RotationSpatial extends Spatial:
 		var last_base_index = (num_segments - 1) * len(points_start)
 		for j in range(len(points_start) - 1):
 			add_face([last_base_index + j, last_base_index + j + 1, j + 1, j])
+
+class FunctionSurface extends Spatial:
+	func _init() -> void:
+		pass
+	func create(x0, x1, y0, y1, step, G):
+		faces = []
+		mid_point = Point.new(0,0,0)
+		var cnt_x = floor((x1 - x0) / step)
+		var cnt_y = floor((y1 - y0) / step)
+		# cnt of faces by x = (cnt_x - 1)
+		# cnt of faces by y = (cnt_y - 1)
+		for x_i in range(cnt_x):
+			for y_i in range(cnt_y):
+				var x = x0 + step * x_i
+				var y = y0 + step * y_i
+				var z = G.call(x, y)
+				points.append(Point.new(x*15, z*15, y*15))
+		for i in range(cnt_y-1):
+			for j in range(cnt_x-1):
+				var top_left = i * cnt_x + j
+				var top_right = i * cnt_x + (j + 1)
+				var bottom_left = (i + 1) * cnt_x + j
+				var bottom_right = (i + 1) * cnt_x + (j + 1)
+				faces.append([top_left, top_right, bottom_left, bottom_right])
