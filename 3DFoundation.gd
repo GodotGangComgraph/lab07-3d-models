@@ -179,6 +179,10 @@ class Spatial:
 	var edges: Array[Vector2i]
 	var mid_point: Point = Point.new(0, 0, 0)
 	var faces #Array[Array[int]]
+	func _init() -> void:
+		points = []
+		edges = []
+		faces = []
 	func add_point(p: Point):
 		points.append(p)
 
@@ -427,3 +431,38 @@ class Axis extends Spatial:
 			[0, 2],
 			[0, 3]
 		]
+
+class RotationSurface extends Spatial:
+	
+	func _init():
+		var points_start = [
+			Point.new(0, 100, 0),
+			Point.new(50, 150, 0),
+			Point.new(100, 100, 0),
+			Point.new(100, 0, 0)
+		]
+		faces = []
+		var num_segments = 10  # The number of divisions around the rotation axis
+		var rotation_angle = 360.0 / num_segments  # The angle step for each segment
+	
+		# Store all points in an array for face construction
+		var all_points = []
+	
+		for i in range(num_segments):
+			var angle = i * rotation_angle
+			var rotation_matrix = AffineMatrices.get_rotation_matrix_about_y(angle)
+	
+			for point in points_start:
+				var new_point = point.duplicate()
+				new_point.apply_matrix(rotation_matrix)
+				add_point(new_point)
+				all_points.append(new_point)
+
+			var base_index = (i-1) * len(points_start)
+			for j in range(len(points_start) - 1):
+				add_face([base_index + j, base_index + j + 1, base_index + j + len(points_start) + 1, base_index + j + len(points_start)])
+	
+		var last_base_index = (num_segments - 1) * len(points_start)
+		for j in range(len(points_start) - 1):
+			add_face([last_base_index + j, last_base_index + j + 1, j + 1, j])
+	
