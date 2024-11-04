@@ -203,7 +203,8 @@ class Spatial:
 	func clear():
 		points.clear()
 		edges.clear()
-
+		faces.clear()
+	
 	func get_middle():
 		return mid_point.duplicate()
 
@@ -245,27 +246,6 @@ class Spatial:
 		var d = sqrt(m * m + n * n)
 		var matrix = AffineMatrices.get_line_rotate_matrix(l, m, n, sin(deg), cos(deg))
 		apply_matrix(matrix)
-		## Попытка реализовать это преобразование цепочкой простых пр-ий :(
-	'''	translate(-p.x, -p.y, -p.z)
-
-		var line_point = Point.from_vec3d(vec)
-		var n = vec.z
-		var m = vec.y
-		var l = vec.x
-		var d = sqrt(m * m + n * n)
-		var matrix = AffineMatrices.get_rotation_x_by_sin_cos(m/d, n/d)
-		apply_matrix(matrix)
-		matrix = AffineMatrices.get_rotation_y_by_sin_cos(-d, l)
-		apply_matrix(matrix)
-		rotation_about_z(deg)
-
-		matrix = AffineMatrices.get_rotation_y_by_sin_cos(d, l)
-		apply_matrix(matrix)
-
-		matrix = AffineMatrices.get_rotation_y_by_sin_cos(-m/d, n/d)
-		apply_matrix(matrix)
-
-		translate(p.x, p.y, p.z)'''
 
 	func scale_about_center(p: Point, ox: float, oy: float, oz: float):
 		translate(-p.x, -p.y, -p.z)
@@ -282,137 +262,6 @@ class Spatial:
 		matrix.set_element(1, 1, my)
 		matrix.set_element(2, 2, mz)
 		apply_matrix(matrix)
-
-class Cube extends Spatial:
-	func _init():
-		var edge_length = 150
-		var l = edge_length/2
-		
-		## THIS IS POINTS FROM SPATIAL
-		points = [
-			Point.new(-l, -l, -l),	Point.new(l, -l, -l),
-			Point.new(l, l, -l),		Point.new(-l, l, -l),
-			Point.new(-l, -l, l),		Point.new(l, -l, l),
-			Point.new(l, l, l),		Point.new(-l, l, l)
-		]
-		faces = [
-			[0, 1, 2, 3],
-			[4, 5, 6, 7],
-			[0, 1, 5, 4],
-			[2, 3, 7, 6],
-			[0, 3, 7, 4],
-			[1, 2, 6, 5]
-		]
-
-class Tetrahedron extends Spatial:
-	func _init():
-		var edge_length = 150
-		var l = edge_length/2
-
-		## THIS IS POINTS FROM SPATIAL
-		points = [
-			Point.new(l, l, l),
-			Point.new(-l, -l, l),
-			Point.new(-l, l, -l),
-			Point.new(l, -l, -l)
-		]
-		faces = [
-			[0, 1, 2],
-			[0, 1, 3],
-			[0, 2, 3],
-			[1, 2, 3]
-		]
-
-
-class Octahedron extends Spatial:
-	func _init():
-		var edge_length = 150
-		var l = edge_length/sqrt(2)
-		
-		## THIS IS POINTS FROM SPATIAL
-		points = [
-			Point.new(l, 0, 0),   
-			Point.new(-l, 0, 0),
-			Point.new(0, l, 0),   
-			Point.new(0, -l, 0),
-			Point.new(0, 0, l),   
-			Point.new(0, 0, -l)
-		]
-		
-		faces = [
-			[0, 2, 4],  
-			[0, 3, 4],  
-			[1, 2, 4],  
-			[1, 3, 4],  
-			[0, 2, 5],  
-			[0, 3, 5],  
-			[1, 2, 5],  
-			[1, 3, 5]   
-		]
-
-
-class Icosahedron extends Spatial:
-	var l
-	func _init():
-		var edge_length = 150
-		l = edge_length/sqrt(5)
-		
-		## THIS IS POINTS FROM SPATIAL
-		points.append(Point.new(0, 0, sqrt(5)/2))
-		
-		for i in range(5):
-			points.append(Point.new(cos(deg_to_rad(i*72)), sin(deg_to_rad(i*72)), 0.5))
-		
-		for i in range(5):
-			points.append(Point.new(cos(deg_to_rad(36+i*72)), sin(deg_to_rad(36+i*72)), -0.5))
-		
-		points.append(Point.new(0, 0, -sqrt(5)/2))
-		
-		scale_about_center(get_middle(), l, l, l)
-		
-		faces = [
-			[0,1,2],	[0,2,3],	[0,3,4],
-			[0,4,5],	[0,5,1],	[10,11,6],
-			[11,7,6],	[11,8,7],	[11,9,8],
-			[11,10,9],	[6,1,10],	[2,6,7],
-			[3,7,8],	[4,8,9],	[5,9,10],
-			[6,2,1],	[7,3,2],	[8,4,3],
-			[9,5,4],	[10,1,5]
-		]
-
-
-class Dodecahedron extends Spatial:
-	func _init():
-		var edge_length = 150
-		var l = edge_length/sqrt(5)*sqrt(2)
-		
-		var icos = Icosahedron.new()
-		l = l/icos.l
-		
-		## THIS IS POINTS FROM SPATIAL
-		for face in icos.faces:
-			var p1 = icos.points[face[0]]
-			var p2 = icos.points[face[1]]
-			var p3 = icos.points[face[2]]
-			
-			points.append(Point.new((p1.x+p2.x+p3.x)/3, (p1.y+p2.y+p3.y)/3, (p1.z+p2.z+p3.z)/3))
-		
-		scale_about_center(get_middle(), l, l, l)
-		
-		faces = [
-			[0, 1, 2, 3, 4],
-			[5, 6, 7, 8, 9],
-			[0, 1, 16, 11, 15],
-			[2, 3, 18, 13, 17],
-			[3, 4, 19, 14, 18],
-			[1, 2, 17, 12, 16],
-			[0, 4, 19, 10, 15],
-			[5, 6, 11, 15, 10],
-			[6, 7, 12, 16, 11],
-			[7, 8, 13, 17, 12],
-			[8, 9, 14, 18, 13],
-			[9, 5, 10, 19, 14] 
-		]
 
 class Axis extends Spatial:
 	func _init():
@@ -432,25 +281,28 @@ class Axis extends Spatial:
 			[0, 3]
 		]
 
-class RotationSurface extends Spatial:
+class RotationSpatial extends Spatial:
+	var num_segments = 10
+	
+	var fun = func(angle): return AffineMatrices.get_rotation_matrix_about_x(angle)
+	
+	var points_start = [
+		Point.new(-50, 0, 0),
+		Point.new(0, 50, 0),
+	]
 	
 	func _init():
-		var points_start = [
-			Point.new(0, 100, 0),
-			Point.new(50, 150, 0),
-			Point.new(100, 100, 0),
-			Point.new(100, 0, 0)
-		]
-		faces = []
-		var num_segments = 10  # The number of divisions around the rotation axis
-		var rotation_angle = 360.0 / num_segments  # The angle step for each segment
+		create()
 	
-		# Store all points in an array for face construction
+	func create():
+		var rotation_angle = 360.0 / num_segments
+		faces = []
+	
 		var all_points = []
 	
 		for i in range(num_segments):
 			var angle = i * rotation_angle
-			var rotation_matrix = AffineMatrices.get_rotation_matrix_about_y(angle)
+			var rotation_matrix = fun.call(angle)
 	
 			for point in points_start:
 				var new_point = point.duplicate()
@@ -465,4 +317,3 @@ class RotationSurface extends Spatial:
 		var last_base_index = (num_segments - 1) * len(points_start)
 		for j in range(len(points_start) - 1):
 			add_face([last_base_index + j, last_base_index + j + 1, j + 1, j])
-	
