@@ -174,6 +174,10 @@ class Point:
 	func get_vec3d():
 		return Vector3(x/w, y/w, z/w)
 
+	
+					
+
+
 class Spatial:
 	var points: Array[Point]
 	var edges: Array[Vector2i]
@@ -262,6 +266,48 @@ class Spatial:
 		matrix.set_element(1, 1, my)
 		matrix.set_element(2, 2, mz)
 		apply_matrix(matrix)
+
+	func load_from_obj(file_path: String):
+		var file = FileAccess.open(file_path, FileAccess.READ)
+		if file == null:
+			return
+			
+		while file.get_position() < file.get_length():
+			var line = file.get_line().strip_edges()
+			if line.begins_with("v "):
+				var parts = line.split(" ")
+				if parts.size() >= 4:
+					var x = parts[1].to_float()
+					var y = parts[2].to_float()
+					var z = parts[3].to_float()
+					add_point(Point.new(x,y,z))
+			elif line.begins_with("f "):
+				var parts = line.split(" ")
+				var face_indices = []
+				for i in range(1, parts.size()):
+					var vertex_index = parts[i].split("/")[0].to_int() - 1
+					face_indices.append(vertex_index)
+				add_face(face_indices)
+		file.close()	
+
+	func save_from_obj(file_path: String):
+		var file = FileAccess.open(file_path, FileAccess.WRITE)
+		if file == null:
+			return
+			
+		for point in points:
+			var line = "v %f %f %f\n" % [point.x, point.y, point.z]
+			file.store_string(line)
+			
+		for face in faces:
+			var line = "f"
+			for vertex_index in face:
+				line += " %d" % (vertex_index + 1)
+			line += "\n"
+			file.store_string(line)
+			
+		file.close()
+
 
 class Axis extends Spatial:
 	func _init():
