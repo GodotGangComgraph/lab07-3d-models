@@ -285,3 +285,27 @@ func _on_create_f_pressed() -> void:
 	
 func _on_function_button_item_selected(index: int) -> void:
 	selected_func = possible_funcs[index]
+
+@onready var save_file_dialog: FileDialog = $HBox/MarginContainer2/VBoxContainer/SaveFileDialog
+
+
+func _on_save_pressed() -> void:
+	save_file_dialog.show()
+
+
+func _on_file_dialog_file_selected(path: String) -> void:
+	spatial.save_from_obj(path)
+	
+
+
+@onready var load_file_dialog: FileDialog = $HBox/MarginContainer2/VBoxContainer/LoadFileDialog
+
+func _on_load_pressed() -> void:
+	load_file_dialog.show()
+
+
+func _on_load_file_dialog_file_selected(path: String) -> void:
+	spatial = F.Spatial.new()
+	spatial.load_from_obj(path)
+	spatial.translate(world_center.x, world_center.y, world_center.z)
+	queue_redraw()

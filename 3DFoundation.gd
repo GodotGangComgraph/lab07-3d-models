@@ -193,7 +193,7 @@ class Spatial:
 	func add_points(arr: Array[Point]):
 		points += arr
 
-	func add_face(arr: Array[int]):
+	func add_face(arr: Array):
 		faces.append(arr)
 
 	func add_faces(arr):
@@ -278,8 +278,8 @@ class Spatial:
 				var parts = line.split(" ")
 				if parts.size() >= 4:
 					var x = parts[1].to_float()
-					var y = parts[2].to_float()
-					var z = parts[3].to_float()
+					var y = -parts[2].to_float()
+					var z = -parts[3].to_float()
 					add_point(Point.new(x,y,z))
 			elif line.begins_with("f "):
 				var parts = line.split(" ")
@@ -288,7 +288,7 @@ class Spatial:
 					var vertex_index = parts[i].split("/")[0].to_int() - 1
 					face_indices.append(vertex_index)
 				add_face(face_indices)
-		file.close()	
+		file.close()
 
 	func save_from_obj(file_path: String):
 		var file = FileAccess.open(file_path, FileAccess.WRITE)
