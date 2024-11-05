@@ -296,7 +296,7 @@ class Spatial:
 			return
 			
 		for point in points:
-			var line = "v %f %f %f\n" % [point.x, point.y, point.z]
+			var line = "v %f %f %f\n" % [point.x, -point.y, -point.z]
 			file.store_string(line)
 			
 		for face in faces:

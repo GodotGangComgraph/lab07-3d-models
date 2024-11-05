@@ -294,8 +294,8 @@ func _on_save_pressed() -> void:
 
 
 func _on_file_dialog_file_selected(path: String) -> void:
+	spatial.translate(-world_center.x, -world_center.y, -world_center.z)
 	spatial.save_from_obj(path)
-	
 
 
 @onready var load_file_dialog: FileDialog = $HBox/MarginContainer2/VBoxContainer/LoadFileDialog
