@@ -332,6 +332,8 @@ class RotationSpatial extends Spatial:
 	
 	var fun = func(angle): return AffineMatrices.get_rotation_matrix_about_x(angle)
 	
+	var world_center = Vector3.ZERO
+	
 	var points_start = [
 		Point.new(-50, 0, 0),
 		Point.new(0, 50, 0),
@@ -352,7 +354,9 @@ class RotationSpatial extends Spatial:
 	
 			for point in points_start:
 				var new_point = point.duplicate()
+				new_point.translate(-world_center.x, -world_center.y, -world_center.z)
 				new_point.apply_matrix(rotation_matrix)
+				new_point.translate(world_center.x, world_center.y, world_center.z)
 				add_point(new_point)
 				all_points.append(new_point)
 

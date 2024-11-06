@@ -51,11 +51,32 @@ func _ready():
 	spatial.translate(world_center.x, world_center.y, world_center.z)
 	axis.translate(world_center.x, world_center.y, world_center.z)
 	queue_redraw()
+	
+@onready var check_box: CheckBox = $HBox/MarginContainer/Menu2/Point/CheckBox
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not check_box.button_pressed:
+		return
+	
+	if event is InputEventMouse:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and event.is_pressed():
+			var mouse_pos = event.global_position
+			print(mouse_pos)
+			point_start.append(F.Point.new(mouse_pos.x, mouse_pos.y, 0))
+			queue_redraw()
 
 func _draw() -> void:
 	draw_by_faces(spatial)
 	draw_axes()
 	draw_line(p1_line.get_vec2d(), p2_line.get_vec2d(), Color.BLUE)
+	draw_points()
+
+func draw_points():
+	for point in point_start:
+		var p = point.duplicate()
+		#p.translate(world_center.x, world_center.y, world_center.z)
+		p.apply_matrix(projection_matrix)
+		draw_circle(p.get_vec2d(), 3, Color.AQUAMARINE)
 
 func draw_by_faces(obj: F.Spatial):
 	for face in obj.faces:
@@ -231,6 +252,8 @@ func _on_create_pressed() -> void:
 	spatial.clear()
 	spatial.num_segments = divisions.value
 	spatial.mid_point = F.Point.new(0,0,0)
+	spatial.mid_point.translate(world_center.x, world_center.y, world_center.z)
+	spatial.world_center = world_center
 	
 	match option_button.selected:
 		0:
@@ -243,21 +266,14 @@ func _on_create_pressed() -> void:
 	spatial.points_start = point_start
 	
 	spatial.create()
-	spatial.translate(world_center.x, world_center.y, world_center.z)
+	#spatial.translate(world_center.x, world_center.y, world_center.z)
 	queue_redraw()
-
-@onready var x: LineEdit = $HBox/MarginContainer/Menu2/Point/x
-@onready var y: LineEdit = $HBox/MarginContainer/Menu2/Point/y
-@onready var z: LineEdit = $HBox/MarginContainer/Menu2/Point/z
-
-func _on_add_point_pressed() -> void:
-	point_start.append(F.Point.new(x.value, y.value, z.value))
 
 
 @onready var menus = [
-	$HBox/MarginContainer/Menu,
 	$HBox/MarginContainer/Menu2,
-	$HBox/MarginContainer/Menu3
+	$HBox/MarginContainer/Menu3,
+	$HBox/MarginContainer/Menu,
 ]
 
 func _on_change_item_selected(index: int) -> void:
